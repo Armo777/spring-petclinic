@@ -8,8 +8,9 @@
 
 	<include file="db/changelog/db.changelog-schema.xml"/>
 
-	<!-- Тестовые данные ТОЛЬКО для dev -->
-	<include file="db/changelog/db.changelog-dev-data.xml"/>
+	<include file="db/changelog/db.changelog-010-sigration-split-owners.xml"/>
 
+	<!-- Тестовые данные для dev -->
+	<include file="db/changelog/db.changelog-dev-data.xml"/>
 
 </databaseChangeLog>

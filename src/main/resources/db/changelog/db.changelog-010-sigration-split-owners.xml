@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+          http://www.liquibase.org/xml/ns/dbchangelog
+          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+	<changeSet id="010-split-owners-table" author="arman">
+
+		<createTable tableName="owners_basic">
+			<column name="id" type="INT" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="first_name" type="VARCHAR(30)"/>
+			<column name="last_name" type="VARCHAR(30)"/>
+		</createTable>
+
+		<createTable tableName="owners_contact">
+			<column name="owner_id" type="INT">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="address" type="VARCHAR(255)"/>
+			<column name="city" type="VARCHAR(80)"/>
+			<column name="telephone" type="VARCHAR(20)"/>
+		</createTable>
+
+		<addForeignKeyConstraint
+			baseTableName="owners_contact"
+			baseColumnNames="owner_id"
+			referencedTableName="owners_basic"
+			referencedColumnNames="id"
+			constraintName="fk_owners_contact_basic"/>
+
+		<sql>
+			INSERT INTO owners_basic (id, first_name, last_name)
+			SELECT id, first_name, last_name FROM owners;
+		</sql>
+
+		<sql>
+			INSERT INTO owners_contact (owner_id, address, city, telephone)
+			SELECT id, address, city, telephone FROM owners;
+		</sql>
+
+		<dropForeignKeyConstraint
+			baseTableName="pets"
+			constraintName="fk_pets_owners"/>
+
+		<addForeignKeyConstraint
+			baseTableName="pets"
+			baseColumnNames="owner_id"
+			referencedTableName="owners_basic"
+			referencedColumnNames="id"
+			constraintName="fk_pets_owners"/>
+
+		<dropTable tableName="owners"/>
+
+	</changeSet>
+
+</databaseChangeLog>
